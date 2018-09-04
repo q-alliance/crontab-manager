@@ -1,0 +1,25 @@
+{
+    "name": "acrnogor/crontab-manager",
+    "description": "Crontab Manager",
+    "type": "library",
+    "authors": [
+        {
+            "name": "Ante Crnogorac",
+            "email": "zwer82@gmail.com"
+        }
+    ],
+    "autoload": {
+        "psr-4": {
+            "Acrnogor\\CrontabManager\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Acrnogor\\CrontabManager\\Tests\\": "tests/"
+        }
+    },
+    "require": {},
+    "require-dev": {
+        "phpunit/phpunit": "^7.3"
+    }
+}
