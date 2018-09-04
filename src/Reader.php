@@ -1,6 +1,6 @@
 <?php
 
-namespace Acrnogor\CrontabManager;
+namespace QAlliance\CrontabManager;
 
 class Reader
 {

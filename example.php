@@ -8,7 +8,7 @@ $cronJobs = [
     '11 1 * * 1 /usr/bin/php /var/www/sample.q-software.com/bin/console app:timerweekteamwork',
 ];
 
-$writer = new \Acrnogor\CrontabManager\Writer(new \Acrnogor\CrontabManager\Reader());
+$writer = new \QAlliance\CrontabManager\Writer(new \QAlliance\CrontabManager\Reader());
 $writer->updateManagedCrontab($cronJobs);
 
 

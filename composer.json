@@ -10,12 +10,12 @@
     ],
     "autoload": {
         "psr-4": {
-            "Acrnogor\\CrontabManager\\": "src/"
+            "QAlliance\\CrontabManager\\": "src/"
         }
     },
     "autoload-dev": {
         "psr-4": {
-            "Acrnogor\\CrontabManager\\Tests\\": "tests/"
+            "QAlliance\\CrontabManager\\Tests\\": "tests/"
         }
     },
     "require": {},

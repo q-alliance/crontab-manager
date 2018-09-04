@@ -9,8 +9,8 @@ $ composer require q-alliance/crontab-manager
 ```php
 <?php
 
-use Acrnogor\CrontabManager\Reader;
-use Acrnogor\CrontabManager\Writer;
+use QAlliance\CrontabManager\Reader;
+use QAlliance\CrontabManager\Writer;
 
 $listOfCronjobs = [
     '3 */4 * * * /home/test/dev/bittrex-logger/bin/console bittrex:fetch --verbose',

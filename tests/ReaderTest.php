@@ -1,6 +1,6 @@
 <?php
 
-namespace Acrnogor\CrontabManager\Tests;
+namespace QAlliance\CrontabManager\Tests;
 
 use PHPUnit\Framework\TestCase;
 
