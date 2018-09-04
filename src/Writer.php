@@ -9,16 +9,20 @@ class Writer
     /** @var Reader */
     private $reader;
 
+    /** @var string */
+    private $tempFile = '/tmp/ctm_temp.xxx';
+
     private $template = '
 #CTMSTART
 {PLACEHOLDER}
 #CTMEND
 ';
 
-    public function __construct(Reader $reader)
+    public function __construct(Reader $reader, string $user = null)
     {
         $this->reader = $reader;
     }
+
 
     public function updateManagedCrontab(array $newCronJobs)
     {
@@ -39,8 +43,7 @@ class Writer
             $crontab
         );
 
-        file_put_contents('/tmp/ctm_temp.xxx', $crontab);
-        echo shell_exec('/usr/bin/crontab /tmp/ctm_temp.xxx');
+        $this->writeToCrontab($crontab);
     }
 
     protected function removeManagedCronJobs($crontab, $managedCrontabJobs): string
@@ -50,5 +53,12 @@ class Writer
             self::PLACEHOLDER_STRING,
             $crontab
         );
+    }
+
+    private function writeToCrontab($crontab)
+    {
+        file_put_contents($this->tempFile, $crontab);
+        $writeCommand = sprintf('/usr/bin/crontab -u %s %s', $this->reader->getUser(), $this->tempFile);
+        shell_exec($writeCommand);
     }
 }
