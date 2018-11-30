@@ -2,24 +2,30 @@
 
 namespace QAlliance\CrontabManager;
 
+/**
+ * Reader
+ *
+ * @package QAlliance\CrontabManager
+ * @author Ante Crnogorac <ante@q-software.com>
+ */
 class Reader
 {
     /** Regex used to extract managed crontab block */
     public const MANAGED_CRONTAB_MATCHER = '$\#CTMSTART([\s\S]*)\#CTMEND$';
 
-    /** @var string  */
+    /** @var string */
     private $user;
 
     /** @var string */
     private $crontab;
 
-    public function __construct($user = null)
+    public function __construct(string $user = null)
     {
         if (!$user) {
-            $user = shell_exec('id -u -n');
-            $user= trim(preg_replace('/\s+/', ' ', $user));
+            $user = (string) shell_exec('id -u -n');
         }
-        $this->user = $user;
+
+        $this->user = trim(preg_replace('/\s+/', ' ', $user));
 
         $crontab = shell_exec(sprintf('crontab -l  -u %s', $this->user));
         $this->crontab = $crontab ?? '';
