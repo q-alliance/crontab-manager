@@ -2,21 +2,24 @@
 
 namespace QAlliance\CrontabManager;
 
+use QAlliance\CrontabManager\CommandLine\Crontab;
+use function implode;
+use function str_replace;
+
 /**
  * Writer
  *
  * @package QAlliance\CrontabManager
  * @author Ante Crnogorac <ante@q-software.com>
  */
-class Writer
+class Writer extends CrontabAware
 {
     public const PLACEHOLDER_STRING = '{PLACEHOLDER}';
 
-    /** @var Reader */
+    /**
+     * @var \QAlliance\CrontabManager\Reader
+     */
     private $reader;
-
-    /** @var string */
-    private $tempFile = '/tmp/ctm_temp.xxx';
 
     private $template = '
 #CTMSTART
@@ -24,18 +27,16 @@ class Writer
 #CTMEND
 ';
 
-    public function __construct(Reader $reader, $tempFile = null)
+    /**
+     * Writer constructor.
+     *
+     * @param \QAlliance\CrontabManager\Reader $reader
+     * @param \QAlliance\CrontabManager\CommandLine\Crontab $crontab
+     */
+    public function __construct(Reader $reader, Crontab $crontab)
     {
+        parent::__construct($crontab);
         $this->reader = $reader;
-
-        if (null !== $tempFile) {
-            $pathArray = pathinfo($tempFile);
-            if (!is_writable($pathArray['dirname'])) {
-                $message = sprintf('Unable to write to temporary file or folder (%s), please make sure current user has correct permissions', $tempFile);
-                throw new \InvalidArgumentException($message);
-            }
-            $this->tempFile = $tempFile;
-        }
     }
 
     public function updateManagedCrontab(array $newCronJobs): void
@@ -71,9 +72,6 @@ class Writer
 
     private function writeToCrontab($crontab): void
     {
-        file_put_contents($this->tempFile, $crontab);
-        $writeCommand = sprintf('/usr/bin/crontab -u %s %s', $this->reader->getUser(), $this->tempFile);
-
-        shell_exec($writeCommand);
+        $this->crontab->write($crontab);
     }
 }

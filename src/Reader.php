@@ -2,38 +2,26 @@
 
 namespace QAlliance\CrontabManager;
 
+use function array_values;
+use function array_filter;
+use function count;
+use function explode;
+use function preg_match;
+
 /**
  * Reader
  *
  * @package QAlliance\CrontabManager
  * @author Ante Crnogorac <ante@q-software.com>
  */
-class Reader
+class Reader extends CrontabAware
 {
     /** Regex used to extract managed crontab block */
     public const MANAGED_CRONTAB_MATCHER = '$\#CTMSTART([\s\S]*)\#CTMEND$';
 
-    /** @var string */
-    private $user;
-
-    /** @var string */
-    private $crontab;
-
-    public function __construct(string $user = null)
-    {
-        if (!$user) {
-            $user = (string) shell_exec('id -u -n');
-        }
-
-        $this->user = trim(preg_replace('/\s+/', ' ', $user));
-
-        $crontab = shell_exec(sprintf('crontab -l  -u %s', $this->user));
-        $this->crontab = $crontab ?? '';
-    }
-
     public function getCrontabAsString(): string
     {
-        return $this->crontab;
+        return $this->crontab->getEntries();
     }
 
     public function getManagedCronJobsAsString(): string
@@ -65,12 +53,11 @@ class Reader
 
     public function hasManagedBlock(): bool
     {
-        return \count($this->getManagedCronJobsAsArray()) > 0;
+        return count($this->getManagedCronJobsAsArray()) > 0;
     }
 
-    public function getUser()
+    public function getUser(): string
     {
-        return $this->user;
+        return (string)$this->crontab->getUser();
     }
-
 }
