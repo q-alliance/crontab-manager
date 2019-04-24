@@ -1,0 +1,47 @@
+language: php
+
+# directories to cache
+cache:
+    directories:
+        - vendor
+        - $HOME/.composer/cache
+
+matrix:
+    # mark as finished before allow_failures are run
+    fast_finish: true
+    include:
+        - php: 7.1
+        - php: 7.2
+        - php: 7.3
+
+# test only master (+ pull requests)
+branches:
+    only:
+        - master
+
+# install dependencies
+install:
+    - composer install
+
+# execute phpunit as the script command
+script:
+    - ./vendor/bin/phpunit -d memory_limit=-1 --colors -c phpunit.xml --coverage-clover=coverage.xml
+
+# disable mail notifications
+notification:
+    email: false
+
+# reduce depth (history) of git checkout
+git:
+    depth: 30
+
+# we don't need sudo
+sudo: false
+
+# enable scrutinizer
+after_script:
+    - wget https://scrutinizer-ci.com/ocular.phar && php ocular.phar code-coverage:upload --format=php-clover coverage.clover
+
+# send coverage to codecov.io
+after_success:
+    - bash <(curl -s https://codecov.io/bash)
