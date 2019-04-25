@@ -5,7 +5,7 @@
     "authors": [
         {
             "name": "Ante Crnogorac",
-            "email": "ante@q-alliance.com"
+            "email": "ante@q-software.com"
         }
     ],
     "autoload": {
@@ -18,7 +18,9 @@
             "QAlliance\\CrontabManager\\Tests\\": "tests/"
         }
     },
-    "require": {},
+    "require": {
+        "symfony/process": "^3.4"
+    },
     "require-dev": {
         "phpstan/phpstan": "^0.11",
         "phpunit/phpunit": "^7.3",
