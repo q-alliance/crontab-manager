@@ -1,11 +1,14 @@
 <?php
 
+declare(strict_types=1);
+
 namespace QAlliance\CrontabManager;
 
+use Symfony\Component\Process\Process;
+
 /**
- * Writer
+ * Writer.
  *
- * @package QAlliance\CrontabManager
  * @author Ante Crnogorac <ante@q-software.com>
  */
 class Writer
@@ -32,6 +35,7 @@ class Writer
             $pathArray = pathinfo($tempFile);
             if (!is_writable($pathArray['dirname'])) {
                 $message = sprintf('Unable to write to temporary file or folder (%s), please make sure current user has correct permissions', $tempFile);
+
                 throw new \InvalidArgumentException($message);
             }
             $this->tempFile = $tempFile;
@@ -49,7 +53,7 @@ class Writer
             $crontab .= $this->template;
         }
 
-        $newCronJobsAsString = PHP_EOL. implode(PHP_EOL, $newCronJobs) . PHP_EOL;
+        $newCronJobsAsString = PHP_EOL . implode(PHP_EOL, $newCronJobs) . PHP_EOL;
 
         $crontab = str_replace(
             self::PLACEHOLDER_STRING,
@@ -69,11 +73,14 @@ class Writer
         );
     }
 
-    private function writeToCrontab($crontab): void
+    private function writeToCrontab($crontab): bool
     {
         file_put_contents($this->tempFile, $crontab);
         $writeCommand = sprintf('/usr/bin/crontab -u %s %s', $this->reader->getUser(), $this->tempFile);
+        $process = new Process(explode(' ', $writeCommand));
 
-        shell_exec($writeCommand);
+        $process->run();
+
+        return $process->isSuccessful();
     }
 }

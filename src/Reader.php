@@ -1,11 +1,14 @@
 <?php
 
+declare(strict_types=1);
+
 namespace QAlliance\CrontabManager;
 
+use Symfony\Component\Process\Process;
+
 /**
- * Reader
+ * Reader.
  *
- * @package QAlliance\CrontabManager
  * @author Ante Crnogorac <ante@q-software.com>
  */
 class Reader
@@ -19,15 +22,20 @@ class Reader
     /** @var string */
     private $crontab;
 
-    public function __construct(string $user = null)
+    public function __construct(string $user)
     {
-        if (!$user) {
-            $user = (string) shell_exec('id -u -n');
+        $userString = preg_replace('/\s+/', ' ', $user);
+        if (null === $userString) {
+            throw new \InvalidArgumentException(sprintf('User not found or invalid user given (%s)', $user));
         }
 
-        $this->user = trim(preg_replace('/\s+/', ' ', $user));
+        $this->user = trim($userString);
+        $command = sprintf('crontab -l -u %s', $this->user);
+        $process = new Process(explode(' ', $command));
+        $process->run();
 
-        $crontab = shell_exec(sprintf('crontab -l  -u %s', $this->user));
+        $crontab = $process->getOutput();
+
         $this->crontab = $crontab ?? '';
     }
 
@@ -68,9 +76,8 @@ class Reader
         return \count($this->getManagedCronJobsAsArray()) > 0;
     }
 
-    public function getUser()
+    public function getUser(): string
     {
         return $this->user;
     }
-
 }
