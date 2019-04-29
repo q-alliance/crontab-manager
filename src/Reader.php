@@ -4,44 +4,27 @@ declare(strict_types=1);
 
 namespace QAlliance\CrontabManager;
 
-use Symfony\Component\Process\Process;
+use function array_values;
+use function array_filter;
+use function count;
+use function explode;
+use function preg_match;
+
 
 /**
  * Reader.
  *
  * @author Ante Crnogorac <ante@q-software.com>
+ * @author Mario Blazek <mario.b@netgen.hr>
  */
-class Reader
+class Reader extends CrontabAware
 {
     /** Regex used to extract managed crontab block */
     public const MANAGED_CRONTAB_MATCHER = '$\#CTMSTART([\s\S]*)\#CTMEND$';
 
-    /** @var string */
-    private $user;
-
-    /** @var string */
-    private $crontab;
-
-    public function __construct(string $user)
-    {
-        $userString = preg_replace('/\s+/', ' ', $user);
-        if (null === $userString) {
-            throw new \InvalidArgumentException(sprintf('User not found or invalid user given (%s)', $user));
-        }
-
-        $this->user = trim($userString);
-        $command = sprintf('crontab -l -u %s', $this->user);
-        $process = new Process(explode(' ', $command));
-        $process->run();
-
-        $crontab = $process->getOutput();
-
-        $this->crontab = $crontab ?? '';
-    }
-
     public function getCrontabAsString(): string
     {
-        return $this->crontab;
+        return $this->crontab->getEntries();
     }
 
     public function getManagedCronJobsAsString(): string
@@ -49,7 +32,6 @@ class Reader
         $result = '';
 
         preg_match(self::MANAGED_CRONTAB_MATCHER, $this->getCrontabAsString(), $matches);
-
         if (isset($matches[1])) {
             $result = $matches[1];
         }
@@ -62,7 +44,6 @@ class Reader
         $results = [];
 
         preg_match(self::MANAGED_CRONTAB_MATCHER, $this->getCrontabAsString(), $matches);
-
         if (isset($matches[1])) {
             $matches = $matches[1];
             $results = array_values(array_filter(explode("\n", $matches)));
@@ -73,11 +54,11 @@ class Reader
 
     public function hasManagedBlock(): bool
     {
-        return \count($this->getManagedCronJobsAsArray()) > 0;
+        return count($this->getManagedCronJobsAsArray()) > 0;
     }
 
     public function getUser(): string
     {
-        return $this->user;
+        return (string) $this->crontab->getUser();
     }
 }
