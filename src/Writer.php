@@ -31,7 +31,7 @@ class Writer extends CrontabAware
         $this->reader = $reader;
     }
 
-    public function updateManagedCrontab(array $newCronJobs): void
+    public function updateManagedCrontab(array $newCronJobs): bool
     {
         $crontab = $this->reader->getCrontabAsString();
 
@@ -50,7 +50,7 @@ class Writer extends CrontabAware
             $crontab
         );
 
-        $this->writeToCrontab($crontab);
+        return $this->writeToCrontab($crontab);
     }
 
     protected function removeManagedCronJobs($crontab, $managedCrontabJobs): string
