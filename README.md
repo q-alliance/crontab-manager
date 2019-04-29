@@ -15,8 +15,7 @@ $ composer require q-alliance/crontab-manager
 ```php
 <?php
 
-use QAlliance\CrontabManager\Reader;
-use QAlliance\CrontabManager\Writer;
+use QAlliance\CrontabManager\Factory;
 
 $listOfCronjobs = [
     '3 */4 * * * /home/test/dev/bittrex-logger/bin/console bittrex:fetch --verbose',
@@ -24,14 +23,13 @@ $listOfCronjobs = [
     '11 1 * * 1 /usr/bin/php /var/www/sample.q-software.com/bin/console app:timerweekteamwork',
 ];
 
-$writer = new Writer(new Reader('user1'));
-$writer->updateManagedCrontab($listOfCronjobs);
-
+$writer = Factory::createWriter('www-data');
+$writer->updateManagedCrontab($cronJobs);
 ```
 * all users current cron jobs will be left intact
-* a new 'block' of cron jobs will be added to crontab, using the list provided
+* a new `block` of cron jobs will be added to crontab, using the list provided
 * this block is managed by this library - if you add or remove jobs from the array, they will be updated when you run the updateMangedCrontab method
-* also see example.php in the root folder
+* also see [example.php](example.php) in the root folder
 
 ### Misc & TODO:
 * tests
