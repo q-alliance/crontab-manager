@@ -41,7 +41,7 @@ class Crontab
         $process = new Process(explode(' ', $command));
         $process->run();
         $crontab = $process->getOutput();
-        if (!$process->isSuccessful()) {
+        if (!$process->isSuccessful() && $process->getErrorOutput() !== "no crontab for www-data\n") {
             throw new \InvalidArgumentException('Unable to read crontab entries - invalid user or insufficient permissions?');
         }
 
