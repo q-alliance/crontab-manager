@@ -19,12 +19,6 @@ class Writer extends CrontabAware
     /** @var Reader */
     private $reader;
 
-    private $template = '
-#CTMSTART
-{PLACEHOLDER}
-#CTMEND
-';
-
     public function __construct(Reader $reader, Crontab $crontab)
     {
         parent::__construct($crontab);
@@ -39,7 +33,11 @@ class Writer extends CrontabAware
             $managedCrontabJobs = $this->reader->getManagedCronJobsAsString();
             $crontab = $this->removeManagedCronJobs($crontab, $managedCrontabJobs);
         } else {
-            $crontab .= $this->template;
+            $crontab .=
+                  PHP_EOL . '#CTMSTART '.$this->getVendorPath()
+                . PHP_EOL . self::PLACEHOLDER_STRING
+                . PHP_EOL . '#CTMEND'
+                . PHP_EOL;
         }
 
         $newCronJobsAsString = PHP_EOL . implode(PHP_EOL, $newCronJobs) . PHP_EOL;
