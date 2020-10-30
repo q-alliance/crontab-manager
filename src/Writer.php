@@ -32,15 +32,24 @@ class Writer extends CrontabAware
         if ($this->reader->hasManagedBlock()) {
             $managedCrontabJobs = $this->reader->getManagedCronJobsAsString();
             $crontab = $this->removeManagedCronJobs($crontab, $managedCrontabJobs);
+
+            /** backward compatibility */
+            if (strpos($crontab, PHP_EOL.'#CTMSTART'.PHP_EOL)!== false) {
+                $crontab = str_replace(
+                    PHP_EOL.'#CTMSTART'.PHP_EOL . self::PLACEHOLDER_STRING.'#CTMEND'.PHP_EOL,
+                    PHP_EOL.'#CTMSTART '.$this->getVendorPath().PHP_EOL.self::PLACEHOLDER_STRING.'#CTMEND '.$this->getVendorPath().PHP_EOL,
+                    $crontab
+                );
+            }
         } else {
             $crontab .=
-                  PHP_EOL . '#CTMSTART '.$this->getVendorPath()
+                  PHP_EOL . '#CTMSTART ' . $this->getVendorPath()
                 . PHP_EOL . self::PLACEHOLDER_STRING
-                . PHP_EOL . '#CTMEND'
+                . '#CTMEND ' . $this->getVendorPath()
                 . PHP_EOL;
         }
 
-        $newCronJobsAsString = PHP_EOL . implode(PHP_EOL, $newCronJobs) . PHP_EOL;
+        $newCronJobsAsString = implode(PHP_EOL, $newCronJobs) . PHP_EOL;
 
         $crontab = str_replace(
             self::PLACEHOLDER_STRING,

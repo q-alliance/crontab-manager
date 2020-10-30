@@ -38,6 +38,8 @@ abstract class CrontabAware
      */
     protected function getCrontabMatcher()
     {
-        return '$\#CTMSTART '.$this->getVendorPath().'([\s\S]*)\#CTMEND$';
+        $unique = ' ' . str_replace(['/'],['\\/'],$this->getVendorPath()) . str_replace('\\', '\\\\', PHP_EOL);
+
+        return '$\#CTMSTART'.$unique.'([\s\S]*)\#CTMEND'.$unique.'$';
     }
 }
