@@ -25,7 +25,7 @@ class Reader extends CrontabAware
         return $this->crontab->getEntries();
     }
 
-    public function getMatchs(): array
+    public function getMatches(): array
     {
         $matches = [];
         if (preg_match($this->getCrontabMatcher(), $this->getCrontabAsString(), $matches)) {
@@ -43,7 +43,7 @@ class Reader extends CrontabAware
     {
         $result = '';
 
-        $matches = $this->getMatchs();
+        $matches = $this->getMatches();
         if (isset($matches[1])) {
             $result = $matches[1];
         }
@@ -55,7 +55,7 @@ class Reader extends CrontabAware
     {
         $results = [];
 
-        $matches = $this->getMatchs();
+        $matches = $this->getMatches();
         if (isset($matches[1])) {
             $matches = $matches[1];
             $results = array_values(array_filter(explode("\n", $matches)));
