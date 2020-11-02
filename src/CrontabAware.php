@@ -24,4 +24,22 @@ abstract class CrontabAware
     {
         $this->crontab = $crontab;
     }
+
+    /**
+     * Unique project path.
+     */
+    protected function getVendorPath()
+    {
+        return dirname(dirname(__DIR__));
+    }
+
+    /**
+     * Regex used to extract managed crontab block.
+     */
+    protected function getCrontabMatcher()
+    {
+        $unique = ' ' . str_replace(['/'],['\\/'],$this->getVendorPath()) . str_replace('\\', '\\\\', PHP_EOL);
+
+        return '$\#CTMSTART'.$unique.'([\s\S]*)\#CTMEND'.$unique.'$';
+    }
 }
